@@ -1,0 +1,63 @@
+# How I got the rank list for continents...
+------------------------------------------------------------
+# This part was outside master_info function from population_analysis.py
+
+# List of countries by continent (code that helped me to create the continent ranking list)
+EU=list(filter(lambda x:x['Continent']=='Europe',data))
+AF=list(filter(lambda x:x['Continent']=='Africa',data))
+AS=list(filter(lambda x:x['Continent']=='Asia',data))
+OC=list(filter(lambda x:x['Continent']=='Oceania',data))
+NA=list(filter(lambda x:x['Continent']=='North America',data))
+SA=list(filter(lambda x:x['Continent']=='South America',data))
+
+#This part was inside master_info (before CCA3_Rank dict) function from population_analysis.py
+
+Europe=functools.reduce(lambda a,b: a + float(b['World Population Percentage']) ,EU, 0)
+Asia=functools.reduce(lambda a,b: a + float(b['World Population Percentage']) ,AS, 0)
+Oceania=functools.reduce(lambda a,b: a + float(b['World Population Percentage']) ,OC, 0)
+North_America=functools.reduce(lambda a,b: a + float(b['World Population Percentage']) ,NA, 0)
+South_America=functools.reduce(lambda a,b: a + float(b['World Population Percentage']) ,SA, 0)
+Africa=functools.reduce(lambda a,b: a + float(b['World Population Percentage']) ,AF, 0)
+
+rank=[Europe,Asia,Oceania,North_America,South_America,Africa]
+rank.sort(reverse=True)
+specific_ranking=list(filter(lambda x:x==WPP,rank))
+specific_ranking=rank.index(specific_ranking[0]) + 1
+------------------------------------------------------------
+# TOP 5 COUNTRIES OF A CONTINENT FUNCTION 
+def population_percentage_pie(option,land_name='Asia'):
+labels=[]
+values=[]
+top=[]
+other_countries=[]
+if option is False:
+  land_data=list(filter(lambda x:x['Continent']==land_name,data))
+  land_data.sort(reverse=True,key=lambda country:country['World Population Percentage'])
+  top=land_data[:5]
+  other_countries=land_data[5:]
+  other_countries={
+    'Country/Territory':'Other countries',
+    'World Population Percentage': functools.reduce(lambda x,y:x+float(y['World Population Percentage']), other_countries,0)
+  }
+  top.append(other_countries)
+
+  labels=[country['Country/Territory'] for country in top]
+  values=[country['World Population Percentage'] for country in top]
+
+elif option is True: #For the world option
+
+  labels=(f"Asia ({round((master_info('Asia',2))['World Population Percentage'],2)})%",
+          f"Africa ({round((master_info('Africa',2))['World Population Percentage'],2)})%",
+          f"Europe ({round((master_info('Europe',2))['World Population Percentage'],2)})%",
+          f"North America ({round((master_info('North America',2))['World Population Percentage'],2)})%",
+          f"South America ({round((master_info('South America',2))['World Population Percentage'],2)})%",
+          f"Oceania ({round((master_info('Oceania',2))['World Population Percentage'],2)})%")
+
+  values=((master_info('Asia',2))['World Population Percentage'], 
+          (master_info('Africa',2))['World Population Percentage'], 
+          (master_info('Europe',2))['World Population Percentage'], 
+          (master_info('North America',2))['World Population Percentage'], 
+          (master_info('South America',2))['World Population Percentage'], 
+          (master_info('Oceania',2))['World Population Percentage'])
+
+return labels,values
